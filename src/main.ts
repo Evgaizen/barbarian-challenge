@@ -1,38 +1,55 @@
 //@ts-ignore
 import "normalize.css";
+//@ts-ignore
+import modelUrl from "../assets/MaterialsVariantsShoe.glb";
 import {
-  BoxGeometry,
-  Mesh,
-  MeshBasicMaterial,
+  Color,
   PerspectiveCamera,
+  PMREMGenerator,
   Scene,
   WebGLRenderer,
 } from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
-const scene = new Scene();
-const camera = new PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
-const renderer = new WebGLRenderer();
+const container = document.getElementById("app");
 
+const renderer = new WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
+container?.appendChild(renderer.domElement);
+const pmremGenerator = new PMREMGenerator(renderer);
+const scene = new Scene();
+scene.background = new Color(0xbfe3dd);
+scene.environment = pmremGenerator.fromScene(
+  new RoomEnvironment(),
+  0.04
+).texture;
+const camera = new PerspectiveCamera(
+  40,
+  window.innerWidth / window.innerHeight,
+  1,
+  100
+);
+camera.position.set(1.5, 1.5, 7);
+const loader = new GLTFLoader();
+loader.load(
+  modelUrl,
+  function (gltf) {
+    const model = gltf.scene;
+    model.position.set(1.4, 1, 0);
+    model.scale.set(10, 10, 10);
+    model.rotation.x += 0.5;
+    scene.add(model);
+    renderer.setAnimationLoop(animate);
 
-document.body.appendChild(renderer.domElement);
-
-const geometry = new BoxGeometry(1, 1, 1);
-const material = new MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-const cube = new Mesh(geometry, material);
-scene.add(cube);
-camera.position.z = 5;
-
-function animate() {
-  requestAnimationFrame(animate);
-  cube.rotation.x += 0.02;
-  cube.rotation.y += 0.01;
-  renderer.render(scene, camera);
-}
-
-animate();
+    function animate() {
+      model.rotation.y -= 0.01;
+      renderer.render(scene, camera);
+    }
+  },
+  undefined,
+  function (error) {
+    console.error(error);
+  }
+);
