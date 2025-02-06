@@ -1,0 +1,21 @@
+{
+  "name": "barbarian-challenge",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "clean": "rm -rf ./dist"
+  },
+  "devDependencies": {
+    "@types/three": "^0.173.0",
+    "typescript": "~5.7.2",
+    "vite": "^6.1.0"
+  },
+  "dependencies": {
+    "normalize.css": "^8.0.1",
+    "three": "^0.173.0"
+  }
+}
